@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MongoDB Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            padding: 20px 0;
+            color: #222;
+        }
+        h2 {
+            text-align: center;
+            padding: 20px 0;
+            color: #222;
+        }
+
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #333;
+            color: #fff;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f4f4f4;
+        }
+
+        tr:hover {
+            background-color: #e0e0e0;
+        }
+
+        form {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        label, input {
+            display: block;
+            margin: 10px 0;
+            width: 100%;
+        }
+
+        button {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        .delete-btn {
+            background-color: red;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background-color: darkred;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Data from MongoDB</h1>
+    <table>
+        <thead>
+            <tr>
+                <% Object.keys(data[0]).forEach(key => { %>
+                    <th><%= key %></th>
+                <% }); %>
+                <th>Actions</th> <!-- เพิ่มคอลัมน์สำหรับปุ่มลบ -->
+            </tr>
+        </thead>
+        <tbody>
+            <% data.forEach(item => { %>
+                <tr>
+                    <% Object.keys(item).forEach(key => { %>
+                        <td><%= item[key] %></td>
+                    <% }); %>
+                    <td>
+                        <form action="/delete/<%= item._id %>" method="POST">
+                            <button class="delete-btn" type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+
+    <h2>Add New Location</h2>
+    <form action="/add" method="POST">
+        <label for="name">Name:</label>
+        <input type="text" name="name" required>
+        <label for="location">Location:</label>
+        <input type="text" name="location" required>
+        <button type="submit">Add</button>
+    </form>
+</body>
+</html>
