@@ -16,7 +16,7 @@ const client = new MongoClient(uri);
 
 // ชื่อของฐานข้อมูลและ collection ที่ต้องการใช้
 const dbName = 'test';
-const collectionName = 'locations';
+const collectionName = 'geojsons';
 
 // ดึงข้อมูลจาก MongoDB และแสดงผลบนหน้าเพจ
 app.get('/', async (req, res) => {
@@ -40,7 +40,7 @@ app.get('/', async (req, res) => {
 
 // ฟังก์ชันเพิ่มข้อมูล
 app.post('/add', async (req, res) => {
-    const { name, location } = req.body;
+    const { name, location, tel, age } = req.body;
 
     try {
         await client.connect();
@@ -48,7 +48,7 @@ app.post('/add', async (req, res) => {
         const collection = database.collection(collectionName);
 
         // เพิ่มข้อมูลใหม่เข้าไปใน collection
-        await collection.insertOne({ name: name, location: location });
+        await collection.insertOne({ name: name, location: location, tel: tel, age: age });
 
         res.redirect('/'); // กลับไปยังหน้าหลักหลังจากเพิ่มข้อมูล
     } catch (error) {
