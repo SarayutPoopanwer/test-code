@@ -1,59 +1,71 @@
+// mongodb+srv://sarayutpoo:4bVGYdz9oCNQmDgF@cluster0.qrth7pb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+const express = require('express');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const cors = require('cors'); // To handle CORS issues if necessary
 
-// URL สำหรับเชื่อมต่อกับ MongoDB (เปลี่ยน 'localhost:27017' และ 'test' เป็นค่าที่เหมาะสมกับการตั้งค่าของคุณ)
+const app = express();
+app.use(bodyParser.json()); // Middleware to parse JSON request bodies
+app.use(cors()); // Enable CORS for cross-origin requests
+
+// MongoDB URL - replace with your MongoDB URI
 const mongoURL = 'mongodb+srv://sarayutpoo:4bVGYdz9oCNQmDgF@cluster0.qrth7pb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
-// เชื่อมต่อกับ MongoDB
+// Connect to MongoDB
 mongoose.connect(mongoURL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
 }).then(() => {
-  console.log('Connected to MongoDB!');
+    console.log('Connected to MongoDB!');
 }).catch((err) => {
-  console.error('Error connecting to MongoDB:', err);
+    console.error('Error connecting to MongoDB:', err);
 });
 
-
-// สร้าง Schema สำหรับเก็บข้อมูลพิกัด
-const locationSchema = new mongoose.Schema({
-  name: String,
-  latitude: Number,
-  longitude: Number,
+// Define a Mongoose Schema for storing GeoJSON
+const geoJsonSchema = new mongoose.Schema({
+    type: { type: String, required: true },  // 'FeatureCollection'
+    features: [
+        {
+            type: { type: String, required: true },  // 'Feature'
+            geometry: {
+                type: { type: String, required: true },  // 'Point'
+                coordinates: { type: [Number], required: true }  // [longitude, latitude]
+            },
+            properties: { type: Object, required: false }  // Optional additional properties
+        }
+    ]
 });
 
-// สร้าง Model จาก Schema
-const Location = mongoose.model('Location', locationSchema);
+// Create a Mongoose Model from the Schema
+const GeoJson = mongoose.model('GeoJson', geoJsonSchema);
 
-
-// เพิ่มข้อมูลพิกัดลงใน MongoDB
-const addLocation = async () => {
-  const newLocation = new Location({
-    name: 'ศรายุทธ ภูพันเว่อ',
-    latitude: 643020178703434,
-    longitude: 6430201787,
-  });
+app.post('/geojson', async (req, res) => {
+  console.log("Received marker data:", req.body);  // Log the data received
+  const geoJsonData = req.body;
 
   try {
-    const savedLocation = await newLocation.save();
-    console.log('Location saved:', savedLocation);
+      const newGeoJson = new GeoJson(geoJsonData); // Create a new document from the received data
+      const savedGeoJson = await newGeoJson.save(); // Save to MongoDB
+      res.status(201).json(savedGeoJson);  // Respond with the saved document
   } catch (err) {
-    console.error('Error saving location:', err);
+      console.error('Error saving GeoJSON:', err);
+      res.status(500).json({ error: 'Failed to save GeoJSON' });
   }
-};
+});
 
-// เรียกใช้ฟังก์ชัน addLocation
-addLocation();
+// API to retrieve all stored GeoJSON data (GET /geojson)
+app.get('/geojson', async (req, res) => {
+    try {
+        const geoJsonRecords = await GeoJson.find({});  // Fetch all GeoJSON records
+        res.json(geoJsonRecords);  // Respond with the data
+    } catch (err) {
+        console.error('Error fetching GeoJSON:', err);
+        res.status(500).json({ error: 'Failed to fetch GeoJSON' });
+    }
+});
 
-
-// ดึงข้อมูลพิกัดทั้งหมดจาก MongoDB
-const getLocations = async () => {
-  try {
-    const locations = await Location.find({});
-    console.log('Locations found:', locations);
-  } catch (err) {
-    console.error('Error getting locations:', err);
-  }
-};
-
-// เรียกใช้ฟังก์ชัน getLocations
-getLocations();
+// Start the server on port 3000
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
