@@ -1,4 +1,3 @@
-// mongodb+srv://sarayutpoo:4bVGYdz9oCNQmDgF@cluster0.qrth7pb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -39,32 +38,33 @@ const geoJsonSchema = new mongoose.Schema({
 // Create a Mongoose Model from the Schema
 const GeoJson = mongoose.model('GeoJson', geoJsonSchema);
 
-app.post('/geojson', async (req, res) => {
-  console.log("Received marker data:", req.body);  // Log the data received
-  const geoJsonData = req.body;
+// POST request to handle data sent to the root "/"
+app.post('/', async (req, res) => {
+    console.log("Received data:", req.body);  // Log the data received
+    const geoJsonData = req.body;
 
-  try {
-      const newGeoJson = new GeoJson(geoJsonData); // Create a new document from the received data
-      const savedGeoJson = await newGeoJson.save(); // Save to MongoDB
-      res.status(201).json(savedGeoJson);  // Respond with the saved document
-  } catch (err) {
-      console.error('Error saving GeoJSON:', err);
-      res.status(500).json({ error: 'Failed to save GeoJSON' });
-  }
-});
-
-// API to retrieve all stored GeoJSON data (GET /geojson)
-app.get('/geojson', async (req, res) => {
     try {
-        const geoJsonRecords = await GeoJson.find({});  // Fetch all GeoJSON records
-        res.json(geoJsonRecords);  // Respond with the data
+        const newGeoJson = new GeoJson(geoJsonData); // Create a new document from the received data
+        const savedGeoJson = await newGeoJson.save(); // Save to MongoDB
+        res.status(201).json(savedGeoJson);  // Respond with the saved document
     } catch (err) {
-        console.error('Error fetching GeoJSON:', err);
-        res.status(500).json({ error: 'Failed to fetch GeoJSON' });
+        console.error('Error saving data:', err);
+        res.status(500).json({ error: 'Failed to save data' });
     }
 });
 
-// Start the server on port 3000
+// GET request to retrieve data from the root "/"
+app.get('/', async (req, res) => {
+    try {
+        const geoJsonRecords = await GeoJson.find({});  // Fetch all records from MongoDB
+        res.json(geoJsonRecords);  // Respond with the fetched data
+    } catch (err) {
+        console.error('Error fetching data:', err);
+        res.status(500).json({ error: 'Failed to fetch data' });
+    }
+});
+
+// Start the server on port 8080
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
