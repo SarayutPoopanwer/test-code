@@ -2,7 +2,7 @@ const express = require('express');
 const { MongoClient, ObjectId } = require('mongodb'); // เพิ่ม ObjectId สำหรับการลบข้อมูล
 const bodyParser = require('body-parser'); // เพิ่ม body-parser สำหรับรับข้อมูลจากฟอร์ม
 const app = express();
-const port = 3000;
+const port = process.env.PORT;
 
 // ตั้งค่า EJS เป็น template engine
 app.set('view engine', 'ejs');
@@ -11,8 +11,8 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // URL สำหรับเชื่อมต่อกับ MongoDB
-const uri = 'mongodb+srv://sarayutpoo:4bVGYdz9oCNQmDgF@cluster0.qrth7pb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
-const client = new MongoClient(uri);
+const mongoURL = 'mongodb+srv://sarayutpoo:4bVGYdz9oCNQmDgF@cluster0.qrth7pb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const client = new MongoClient(mongoURL);
 
 // ชื่อของฐานข้อมูลและ collection ที่ต้องการใช้
 const dbName = 'test';
