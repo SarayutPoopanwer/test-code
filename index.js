@@ -15,8 +15,8 @@ const mongoURL = 'mongodb+srv://sarayutpoo:4bVGYdz9oCNQmDgF@cluster0.qrth7pb.mon
 mongoose.connect(mongoURL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    serverSelectionTimeoutMS: 0, // 30 seconds
-    socketTimeoutMS: 0, // 45 seconds
+    serverSelectionTimeoutMS: 30000,  // ตั้ง timeout เป็น 30 วินาที
+    socketTimeoutMS: 45000,  // ตั้ง timeout เป็น 45 วินาที // 45 seconds
 }).then(() => {
     console.log('Connected to MongoDB!');
 }).catch((err) => {
