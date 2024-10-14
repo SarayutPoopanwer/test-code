@@ -39,7 +39,7 @@ const geoJsonSchema = new mongoose.Schema({
 // Create a Mongoose Model from the Schema
 const GeoJson = mongoose.model('GeoJson', geoJsonSchema);
 
-app.post('/', async (req, res) => {
+app.post('/geojson', async (req, res) => {
   console.log("Received marker data:", req.body);  // Log the data received
   const geoJsonData = req.body;
 
@@ -54,7 +54,7 @@ app.post('/', async (req, res) => {
 });
 
 // API to retrieve all stored GeoJSON data (GET /geojson)
-app.get('/', async (req, res) => {
+app.get('/geojson', async (req, res) => {
     try {
         const geoJsonRecords = await GeoJson.find({});  // Fetch all GeoJSON records
         res.json(geoJsonRecords);  // Respond with the data
@@ -65,7 +65,7 @@ app.get('/', async (req, res) => {
 });
 
 // Start the server on port 3000
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
